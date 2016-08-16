@@ -1,2 +1,2 @@
 # EventManager
-Some usefull classes for a fast gamedev.
+Simple event system.
