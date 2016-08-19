@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System;
 using System.Collections.Generic;
 
 namespace Yoshapihoff
@@ -8,6 +7,10 @@ namespace Yoshapihoff
     {
         public class EventManager : Singleton<EventManager>
         {
+            public delegate void Action(MonoBehaviour sender, MonoBehaviour reciever, object arg);
+
+            public bool DebugMode = true;
+
             private Dictionary<int, List<Action>> EventActions = new Dictionary<int, List<Action>>();
 
             /// <summary>
@@ -27,6 +30,10 @@ namespace Yoshapihoff
                         return false;
                     }
                     actions.Add(action);
+                    if (DebugMode)
+                    {
+                        Debug.Log(action + " subscribed to event:  \"" + eventType + "\"");
+                    }
                     return true;
                 }
 
@@ -50,8 +57,12 @@ namespace Yoshapihoff
                     if (actions.Contains(action))
                     {
                         actions.Remove(action);
+                        if (DebugMode)
+                        {
+                            Debug.Log(action + " unsubscribed from event: \"" + eventType + "\"");
+                        }
                         return true;
-                    }
+                    } 
                     Debug.LogError("This handler is not subscribed to this event");
                     return false;
                 }
@@ -63,14 +74,18 @@ namespace Yoshapihoff
             /// Оповестить всех подписчиков о событии
             /// </summary>
             /// <param name="eventType">Событие</param>
-            public void PostNotification(int eventType)
+            public void PostNotification(int eventType, MonoBehaviour sender, object arg = null, MonoBehaviour reciever = null)
             {
                 List<Action> actions;
                 if (EventActions.TryGetValue(eventType, out actions))
                 {
                     for (int i = 0; i < actions.Count; ++i)
                     {
-                        actions[i]();
+                        actions[i].Invoke(sender, reciever, arg);
+                        if (DebugMode)
+                        {
+                            Debug.Log("Event: \"" + eventType + "\" is happened");
+                        }
                     }
                 }
             }
@@ -97,3 +112,7 @@ namespace Yoshapihoff
         }
     }
 }
+/*
+TODO: нужны события адресованные кому-то конкретному, а это значит,
+что нужно в подписчики, помимо обработчика передавать того, кто обрабатывает эот событие.
+*/
