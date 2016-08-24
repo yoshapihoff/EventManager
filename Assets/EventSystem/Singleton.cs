@@ -12,21 +12,21 @@ namespace Yoshapihoff
             {
                 get
                 {
-                    if (_Inst == null)
+                    if ( _Inst == null )
                     {
-                        _Inst = (T)FindObjectOfType(typeof(T));
+                        _Inst = (T)FindObjectOfType (typeof (T));
 
-                        if (FindObjectsOfType(typeof(T)).Length > 1)
+                        if ( FindObjectsOfType (typeof (T)).Length > 1 )
                         {
                             return _Inst;
                         }
 
-                        if (_Inst == null)
+                        if ( _Inst == null )
                         {
-                            GameObject singleton = new GameObject();
-                            _Inst = singleton.AddComponent<T>();
+                            GameObject singleton = new GameObject ();
+                            _Inst = singleton.AddComponent<T> ();
 
-                            DontDestroyOnLoad(singleton);
+                            DontDestroyOnLoad (singleton);
                         }
                     }
 
@@ -34,9 +34,9 @@ namespace Yoshapihoff
                 }
             }
 
-            void Awake()
+            void Awake ()
             {
-                this.name = "(singleton) " + typeof(T).ToString();
+                this.name = "(singleton) " + typeof (T).ToString ();
             }
         }
     }

@@ -7,11 +7,11 @@ namespace Yoshapihoff
     {
         public class EventManager : Singleton<EventManager>
         {
-            public delegate void Action(MonoBehaviour sender, MonoBehaviour reciever, object arg);
+            public delegate void Action (MonoBehaviour sender, MonoBehaviour reciever, object arg);
 
             public bool DebugMode = true;
 
-            private Dictionary<int, List<Action>> EventActions = new Dictionary<int, List<Action>>();
+            private Dictionary<int, List<Action>> EventActions = new Dictionary<int, List<Action>> ();
 
             /// <summary>
             /// Подписаться на событие
@@ -19,27 +19,27 @@ namespace Yoshapihoff
             /// <param name="eventType">Событие</param>
             /// <param name="action">Действие-обработчик события</param>
             /// <returns></returns>
-            public bool Subscribe(int eventType, Action action)
+            public bool Subscribe (int eventType, Action action)
             {
                 List<Action> actions;
-                if (EventActions.TryGetValue(eventType, out actions))
+                if ( EventActions.TryGetValue (eventType, out actions) )
                 {
-                    if (actions.Contains(action))
+                    if ( actions.Contains (action) )
                     {
-                        Debug.LogError("The handler is already subscribed to the event");
+                        Debug.LogError ("The handler is already subscribed to the event");
                         return false;
                     }
-                    actions.Add(action);
-                    if (DebugMode)
+                    actions.Add (action);
+                    if ( DebugMode )
                     {
-                        Debug.Log(action + " subscribed to event:  \"" + eventType + "\"");
+                        Debug.Log (action + " subscribed to event:  \"" + eventType + "\"");
                     }
                     return true;
                 }
 
-                actions = new List<Action>();
-                actions.Add(action);
-                EventActions.Add(eventType, actions);
+                actions = new List<Action> ();
+                actions.Add (action);
+                EventActions.Add (eventType, actions);
                 return true;
             }
 
@@ -49,24 +49,24 @@ namespace Yoshapihoff
             /// <param name="eventType">Событие</param>
             /// <param name="action">Действие-обработчик события</param>
             /// <returns></returns>
-            public bool Unsubscribe(int eventType, Action action)
+            public bool Unsubscribe (int eventType, Action action)
             {
                 List<Action> actions;
-                if (EventActions.TryGetValue(eventType, out actions))
+                if ( EventActions.TryGetValue (eventType, out actions) )
                 {
-                    if (actions.Contains(action))
+                    if ( actions.Contains (action) )
                     {
-                        actions.Remove(action);
-                        if (DebugMode)
+                        actions.Remove (action);
+                        if ( DebugMode )
                         {
-                            Debug.Log(action + " unsubscribed from event: \"" + eventType + "\"");
+                            Debug.Log (action + " unsubscribed from event: \"" + eventType + "\"");
                         }
                         return true;
                     } 
-                    Debug.LogError("This handler is not subscribed to this event");
+                    Debug.LogError ("This handler is not subscribed to this event");
                     return false;
                 }
-                Debug.LogError("This event has no handlers");
+                Debug.LogError ("This event has no handlers");
                 return false;
             }
 
@@ -74,40 +74,40 @@ namespace Yoshapihoff
             /// Оповестить всех подписчиков о событии
             /// </summary>
             /// <param name="eventType">Событие</param>
-            public void PostNotification(int eventType, MonoBehaviour sender, object arg = null, MonoBehaviour reciever = null)
+            public void PostNotification (int eventType, MonoBehaviour sender, object arg = null, MonoBehaviour reciever = null)
             {
                 List<Action> actions;
-                if (EventActions.TryGetValue(eventType, out actions))
+                if ( EventActions.TryGetValue (eventType, out actions) )
                 {
-                    for (int i = 0; i < actions.Count; ++i)
+                    for ( int i = 0; i < actions.Count; ++i )
                     {
-                        actions[i].Invoke(sender, reciever, arg);
-                        if (DebugMode)
+                        actions[i].Invoke (sender, reciever, arg);
+                        if ( DebugMode )
                         {
-                            Debug.Log("Event: \"" + eventType + "\" is happened");
+                            Debug.Log ("Event: \"" + eventType + "\" is happened");
                         }
                     }
                 }
             }
 
-            void UnsubscribeAllDestroyedSubscribers()
+            void UnsubscribeAllDestroyedSubscribers ()
             {
-                foreach (var actions in EventActions.Values)
+                foreach ( var actions in EventActions.Values )
                 {
-                    for (int i = actions.Count - 1; i >= 0; --i)
+                    for ( int i = actions.Count - 1; i >= 0; --i )
                     {
                         var action = actions[i];
-                        if (action.Equals(null))
+                        if ( action.Equals (null) )
                         {
-                            actions.RemoveAt(i);
+                            actions.RemoveAt (i);
                         }
                     }
                 }
             }
 
-            void OnLevelWasLoaded()
+            void OnLevelWasLoaded ()
             {
-                UnsubscribeAllDestroyedSubscribers();
+                UnsubscribeAllDestroyedSubscribers ();
             }
         }
     }
